@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+/* Cursor & Interaction Feedback */
+button, input[type="checkbox"], a {
+  cursor: pointer;
+}
+
+button:active {
+  transform: scale(0.97);
+  transition: transform 0.05s ease-in-out;
+}
+
+input[type="checkbox"]:active {
+  transform: scale(0.9);
+  transition: transform 0.05s ease-in-out;
+}

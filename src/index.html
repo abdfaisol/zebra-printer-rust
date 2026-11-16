@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Print Wareify</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body class="bg-slate-50 text-slate-800 antialiased font-sans select-none min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-xs">
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 bg-amber-500 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-inner">
+          W
+        </div>
+        <div>
+          <h1 class="font-bold text-lg text-slate-900 leading-tight">Print Wareify</h1>
+          <p class="text-xs text-slate-500">Zebra Desktop Print Manager (Rust Native + Tailwind)</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <span id="global-status-badge" class="px-3 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-700 flex items-center space-x-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span id="global-status-text">Memeriksa Layanan...</span>
+        </span>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="bg-white border-b border-slate-200 px-6 flex space-x-8 text-sm font-medium">
+      <button id="tab-btn-config" class="py-3 border-b-2 border-amber-500 text-amber-600 font-semibold focus:outline-hidden">
+        Pengaturan API & Service
+      </button>
+      <button id="tab-btn-printers" class="py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 focus:outline-hidden">
+        Master Device Printer
+      </button>
+      <button id="tab-btn-logs" class="py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 focus:outline-hidden">
+        Aktivitas & Log
+      </button>
+    </nav>
+
+    <!-- Content Sections -->
+    <main class="flex-1 p-6 overflow-y-auto max-w-7xl mx-auto w-full">
+      <!-- TAB 1: PENGATURAN -->
+      <section id="tab-content-config" class="space-y-6">
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-xs space-y-4">
+          <h2 class="text-base font-semibold text-slate-900 border-b border-slate-100 pb-2">Konfigurasi API (X-API-KEY)</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">API Base URL</label>
+              <input id="cfg-base-url" type="text" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono focus:border-amber-500 focus:ring-1 focus:ring-amber-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">X-API-KEY</label>
+              <input id="cfg-api-token" type="password" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono focus:border-amber-500 focus:ring-1 focus:ring-amber-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Path Listen Print Job</label>
+              <input id="cfg-path-listen" type="text" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Path Update Status Job</label>
+              <input id="cfg-path-update" type="text" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono" />
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-xs space-y-4">
+          <h2 class="text-base font-semibold text-slate-900 border-b border-slate-100 pb-2">Layanan & Jaringan</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+            <div class="flex items-center space-x-3">
+              <input id="cfg-tcp-enabled" type="checkbox" class="w-4 h-4 text-amber-500 rounded-sm border-slate-300" />
+              <label for="cfg-tcp-enabled" class="text-sm font-medium text-slate-700">Aktifkan Virtual TCP</label>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">TCP Host</label>
+              <input id="cfg-tcp-host" type="text" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm font-mono" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">TCP Port</label>
+              <input id="cfg-tcp-port" type="number" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm font-mono" />
+            </div>
+          </div>
+
+          <div class="pt-2 flex flex-wrap gap-6 items-center">
+            <label class="flex items-center space-x-2 text-sm text-slate-700">
+              <input id="cfg-polling-enabled" type="checkbox" class="w-4 h-4 text-amber-500 rounded-sm" />
+              <span>Aktifkan Polling Job</span>
+            </label>
+            <label class="flex items-center space-x-2 text-sm text-slate-700">
+              <input id="cfg-auto-sync" type="checkbox" class="w-4 h-4 text-amber-500 rounded-sm" />
+              <span>Auto-Sync Status Device</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-3">
+          <button id="btn-save-config" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm rounded-lg shadow-xs transition">
+            Simpan Pengaturan
+          </button>
+        </div>
+      </section>
+
+      <!-- TAB 2: PRINTERS -->
+      <section id="tab-content-printers" class="hidden space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="space-x-2">
+            <button id="btn-scan" class="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-medium text-sm rounded-lg shadow-2xs">
+              Pindai Printer
+            </button>
+            <button id="btn-save-printers" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm rounded-lg shadow-2xs">
+              Simpan Perubahan
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 text-slate-600 border-b border-slate-200 text-xs font-semibold">
+              <tr>
+                <th class="py-3 px-4 w-20 text-center">Aktifkan?</th>
+                <th class="py-3 px-4">Alamat Perangkat</th>
+                <th class="py-3 px-4">Nama Printer</th>
+                <th class="py-3 px-4 w-32 text-center">Status</th>
+                <th class="py-3 px-4 w-24 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="printer-table-body" class="divide-y divide-slate-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- TAB 3: LOGS -->
+      <section id="tab-content-logs" class="hidden space-y-4">
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-medium text-slate-600">Catatan Aktivitas Real-Time</span>
+          <div class="space-x-2">
+            <button id="btn-open-logs" class="px-3 py-1.5 bg-white border border-slate-300 text-slate-700 text-xs font-medium rounded-lg">
+              Buka Folder Log
+            </button>
+            <button id="btn-clear-logs" class="px-3 py-1.5 bg-white border border-slate-300 text-slate-700 text-xs font-medium rounded-lg">
+              Bersihkan Layar
+            </button>
+          </div>
+        </div>
+        <div id="log-console" class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs h-96 overflow-y-auto space-y-1 shadow-inner">
+          <p class="text-slate-500">[System] Menunggu aktivitas polling...</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 px-6 py-3 flex items-center justify-between text-xs text-slate-500">
+      <span id="footer-printer-count">Status: Tidak ada printer terhubung</span>
+      <span>Print Wareify Desktop v1.3.0 (Rust)</span>
+    </footer>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
