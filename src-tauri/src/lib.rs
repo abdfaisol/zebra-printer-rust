@@ -13,6 +13,26 @@ use tauri::{
     tray::{TrayIconBuilder, TrayIconEvent},
     Manager, State,
 };
+use tauri_plugin_dialog::DialogExt;
+
+#[tauri::command]
+async fn save_export_file(app: tauri::AppHandle, content: String, default_name: String) -> Result<Option<String>, String> {
+    use std::fs;
+    let file_path = app
+        .dialog()
+        .file()
+        .set_file_name(&default_name)
+        .add_filter("JSON Configuration (*.json)", &["json"])
+        .blocking_save_file();
+
+    if let Some(path) = file_path {
+        let path_buf = path.as_path().ok_or_else(|| "Gagal mendapatkan path file".to_string())?;
+        fs::write(path_buf, content).map_err(|e| format!("Gagal menulis file: {}", e))?;
+        Ok(Some(path_buf.to_string_lossy().to_string()))
+    } else {
+        Ok(None)
+    }
+}
 
 #[tauri::command]
 fn scan_printers(state: State<'_, Arc<AppState>>) -> Result<Vec<DiscoveredPrinter>, String> {
@@ -120,6 +140,7 @@ pub fn run() {
 
     tauri::Builder::default()
         .manage(Arc::clone(&app_state))
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .setup(move |app| {
             // Setup System Tray
@@ -190,7 +211,8 @@ pub fn run() {
             scan_printers,
             sync_all_printers_to_server,
             test_print,
-            open_log_folder
+            open_log_folder,
+            save_export_file
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

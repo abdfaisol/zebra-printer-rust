@@ -15,8 +15,8 @@ async function safeInvoke(cmd, args = {}) {
   // Mock fallback for browser preview
   if (cmd === "get_config") {
     return {
-      api_base_url: "https://dev-eam-api.midsuit.com/api/v1/",
-      api_token: "d85045f7-b475-4ffe-8b75-3a1a8757033b",
+      api_base_url: "",
+      api_token: "",
       path_listen_job: "printers/listen-print-job",
       path_update_job: "printers/update-print-job",
       path_printers: "printers",
@@ -77,30 +77,35 @@ function showToast(message, type = "success") {
 const tabBtns = {
   config: document.getElementById("tab-btn-config"),
   printers: document.getElementById("tab-btn-printers"),
+  backup: document.getElementById("tab-btn-backup"),
   logs: document.getElementById("tab-btn-logs"),
 };
 
 const tabContents = {
   config: document.getElementById("tab-content-config"),
   printers: document.getElementById("tab-content-printers"),
+  backup: document.getElementById("tab-content-backup"),
   logs: document.getElementById("tab-content-logs"),
 };
 
 function switchTab(name) {
   Object.keys(tabBtns).forEach((k) => {
-    if (k === name) {
-      tabBtns[k].className = "py-3 border-b-2 border-amber-500 text-amber-600 font-semibold focus:outline-hidden";
-      tabContents[k].classList.remove("hidden");
-    } else {
-      tabBtns[k].className = "py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 focus:outline-hidden";
-      tabContents[k].classList.add("hidden");
+    if (tabBtns[k] && tabContents[k]) {
+      if (k === name) {
+        tabBtns[k].className = "py-3 border-b-2 border-amber-500 text-amber-600 font-semibold focus:outline-hidden flex items-center space-x-2";
+        tabContents[k].classList.remove("hidden");
+      } else {
+        tabBtns[k].className = "py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 focus:outline-hidden flex items-center space-x-2";
+        tabContents[k].classList.add("hidden");
+      }
     }
   });
 }
 
-tabBtns.config.addEventListener("click", () => switchTab("config"));
-tabBtns.printers.addEventListener("click", () => switchTab("printers"));
-tabBtns.logs.addEventListener("click", () => switchTab("logs"));
+if (tabBtns.config) tabBtns.config.addEventListener("click", () => switchTab("config"));
+if (tabBtns.printers) tabBtns.printers.addEventListener("click", () => switchTab("printers"));
+if (tabBtns.backup) tabBtns.backup.addEventListener("click", () => switchTab("backup"));
+if (tabBtns.logs) tabBtns.logs.addEventListener("click", () => switchTab("logs"));
 
 // Logs
 const logConsole = document.getElementById("log-console");
@@ -145,7 +150,8 @@ async function loadConfig() {
 
 // Reset Default
 document.getElementById("btn-reset-default").addEventListener("click", () => {
-  document.getElementById("cfg-base-url").value = "https://dev-eam-api.midsuit.com/api/v1/";
+  document.getElementById("cfg-base-url").value = "";
+  document.getElementById("cfg-api-token").value = "";
   document.getElementById("cfg-path-listen").value = "printers/listen-print-job";
   document.getElementById("cfg-path-update").value = "printers/update-print-job";
   document.getElementById("cfg-path-printers").value = "printers";
@@ -315,6 +321,166 @@ document.getElementById("btn-sync-server").addEventListener("click", async () =>
     showToast(`Gagal: ${err}`, "error");
   }
 });
+
+// --- Export & Import Fitur ---
+function getFormValuesAsConfig() {
+  return {
+    api_base_url: document.getElementById("cfg-base-url").value.trim(),
+    api_token: document.getElementById("cfg-api-token").value.trim(),
+    path_listen_job: document.getElementById("cfg-path-listen").value.trim() || "printers/listen-print-job",
+    path_update_job: document.getElementById("cfg-path-update").value.trim() || "printers/update-print-job",
+    path_printers: document.getElementById("cfg-path-printers").value.trim() || "printers",
+    tcp_enabled: document.getElementById("cfg-tcp-enabled").checked,
+    tcp_host: document.getElementById("cfg-tcp-host").value.trim() || "127.0.0.1",
+    tcp_port: parseInt(document.getElementById("cfg-tcp-port").value, 10) || 9100,
+    polling_interval_ms: parseInt(document.getElementById("cfg-interval-ms").value, 10) || 1000,
+    polling_enabled: document.getElementById("cfg-polling-enabled").checked,
+    auto_sync_printers: document.getElementById("cfg-auto-sync").checked,
+    run_at_startup: document.getElementById("cfg-run-startup").checked,
+    printers: currentConfig && Array.isArray(currentConfig.printers) ? currentConfig.printers : [],
+  };
+}
+
+// Tombol Export: Munculkan Dialog Save File OS (Pilih Folder & Nama File)
+const btnExport = document.getElementById("btn-export-config");
+if (btnExport) {
+  btnExport.addEventListener("click", async () => {
+    try {
+      const exportData = getFormValuesAsConfig();
+      currentConfig = { ...exportData };
+
+      const jsonStr = JSON.stringify(exportData, null, 2);
+      
+      const now = new Date();
+      const dateStr = now.toISOString().slice(0, 10);
+      const timeStr = `${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}`;
+      const defaultFileName = `wareify_config_printers_${dateStr}_${timeStr}.json`;
+
+      // Coba panggil native file save dialog Tauri
+      let savedPath = null;
+      try {
+        savedPath = await safeInvoke("save_export_file", {
+          content: jsonStr,
+          defaultName: defaultFileName,
+        });
+      } catch (invokeErr) {
+        console.warn("Native dialog fallback:", invokeErr);
+      }
+
+      if (savedPath) {
+        appendLog(`File konfigurasi & printer berhasil disimpan ke: ${savedPath}`);
+        showToast("File backup berhasil disimpan!", "success");
+      } else if (savedPath === null && (window.__TAURI_INTERNALS__ || window.__TAURI__)) {
+        // User menekan cancel di dialog save file
+        appendLog("Ekspor konfigurasi dibatalkan oleh pengguna.");
+      } else {
+        // Fallback untuk browser preview biasa jika bukan native desktop
+        const blob = new Blob([jsonStr], { type: "application/json;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = defaultFileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        appendLog(`File konfigurasi & list printer diekspor: ${defaultFileName}`);
+        showToast("File backup berhasil diekspor!", "success");
+      }
+    } catch (e) {
+      appendLog(`Gagal mengekspor file: ${e}`);
+      showToast(`Gagal export: ${e}`, "error");
+    }
+  });
+}
+
+// Tombol Trigger Import File
+const btnImportTrigger = document.getElementById("btn-import-trigger");
+const inputImportFile = document.getElementById("input-import-file");
+const importFileName = document.getElementById("import-file-name");
+
+if (btnImportTrigger && inputImportFile) {
+  btnImportTrigger.addEventListener("click", () => {
+    inputImportFile.value = "";
+    inputImportFile.click();
+  });
+
+  inputImportFile.addEventListener("change", (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    if (importFileName) importFileName.textContent = file.name;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const rawContent = event.target.result;
+        const parsed = JSON.parse(rawContent);
+
+        // Validasi struktur minimal
+        if (typeof parsed !== "object" || parsed === null) {
+          throw new Error("Format JSON tidak valid");
+        }
+
+        const mergedConfig = {
+          api_base_url: parsed.api_base_url || parsed.apiBaseUrl || "",
+          api_token: parsed.api_token || parsed.apiToken || "",
+          path_listen_job: parsed.path_listen_job || parsed.pathListenJob || "printers/listen-print-job",
+          path_update_job: parsed.path_update_job || parsed.pathUpdateJob || "printers/update-print-job",
+          path_printers: parsed.path_printers || parsed.pathPrinters || "printers",
+          tcp_enabled: parsed.tcp_enabled !== undefined ? parsed.tcp_enabled : (parsed.tcpEnabled !== undefined ? parsed.tcpEnabled : true),
+          tcp_host: parsed.tcp_host || parsed.tcpHost || "127.0.0.1",
+          tcp_port: parseInt(parsed.tcp_port || parsed.tcpPort, 10) || 9100,
+          polling_interval_ms: parseInt(parsed.polling_interval_ms || parsed.pollingIntervalMs, 10) || 1000,
+          polling_enabled: parsed.polling_enabled !== undefined ? parsed.polling_enabled : (parsed.pollingEnabled !== undefined ? parsed.pollingEnabled : true),
+          auto_sync_printers: parsed.auto_sync_printers !== undefined ? parsed.auto_sync_printers : (parsed.autoSyncPrinters !== undefined ? parsed.autoSyncPrinters : true),
+          run_at_startup: parsed.run_at_startup !== undefined ? parsed.run_at_startup : (parsed.runAtStartup !== undefined ? parsed.runAtStartup : false),
+          printers: Array.isArray(parsed.printers) ? parsed.printers : (currentConfig?.printers || []),
+        };
+
+        // Update currentConfig
+        currentConfig = mergedConfig;
+
+        // Terapkan ke form GUI
+        document.getElementById("cfg-base-url").value = mergedConfig.api_base_url;
+        document.getElementById("cfg-api-token").value = mergedConfig.api_token;
+        document.getElementById("cfg-path-listen").value = mergedConfig.path_listen_job;
+        document.getElementById("cfg-path-update").value = mergedConfig.path_update_job;
+        document.getElementById("cfg-path-printers").value = mergedConfig.path_printers;
+        document.getElementById("cfg-tcp-enabled").checked = mergedConfig.tcp_enabled;
+        document.getElementById("cfg-tcp-host").value = mergedConfig.tcp_host;
+        document.getElementById("cfg-tcp-port").value = mergedConfig.tcp_port;
+        document.getElementById("cfg-interval-ms").value = mergedConfig.polling_interval_ms;
+        document.getElementById("cfg-polling-enabled").checked = mergedConfig.polling_enabled;
+        document.getElementById("cfg-auto-sync").checked = mergedConfig.auto_sync_printers;
+        document.getElementById("cfg-run-startup").checked = mergedConfig.run_at_startup;
+
+        // Render tabel printer
+        renderPrintersTable(mergedConfig.printers);
+
+        // Simpan langsung ke disk via invoke save_config
+        try {
+          await invoke("save_config", { newCfg: currentConfig });
+          appendLog(`Konfigurasi & ${mergedConfig.printers.length} printer berhasil diimpor dari: ${file.name}`);
+          showToast(`Impor berhasil! Memuat ${mergedConfig.printers.length} printer.`, "success");
+        } catch (saveErr) {
+          appendLog(`Data diimpor ke form tetapi gagal disimpan ke disk: ${saveErr}`);
+          showToast("Data diimpor ke form, silakan klik Simpan.", "error");
+        }
+      } catch (err) {
+        appendLog(`Gagal membaca file impor: ${err.message || err}`);
+        showToast(`Gagal impor: File JSON tidak valid`, "error");
+      }
+    };
+
+    reader.onerror = () => {
+      showToast("Gagal membaca file dari penyimpanan.", "error");
+    };
+
+    reader.readAsText(file);
+  });
+}
 
 // Tauri Event Listeners
 listen("log-message", (event) => {

@@ -36,7 +36,7 @@ pub struct AppConfig {
 impl Default for AppConfig {
     fn default() -> Self {
         Self {
-            api_base_url: "https://dev-eam-api.midsuit.com/api/v1/".to_string(),
+            api_base_url: "".to_string(),
             api_token: "".to_string(),
             path_listen_job: "printers/listen-print-job".to_string(),
             path_update_job: "printers/update-print-job".to_string(),

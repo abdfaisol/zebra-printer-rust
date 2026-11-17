@@ -26,6 +26,9 @@
       <button id="tab-btn-printers" class="py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 focus:outline-hidden flex items-center space-x-2">
         <span>Kelola Printer</span>
       </button>
+      <button id="tab-btn-backup" class="py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 focus:outline-hidden flex items-center space-x-2">
+        <span>Export & Import</span>
+      </button>
       <button id="tab-btn-logs" class="py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 focus:outline-hidden flex items-center space-x-2">
         <span>Catatan Aktivitas</span>
       </button>
@@ -139,8 +142,15 @@
           <button id="btn-reset-default" class="px-5 py-2.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-medium text-sm rounded-lg transition shadow-2xs">
             Atur Ulang Default
           </button>
-          <button id="btn-save-config" class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm rounded-lg shadow-xs transition">
-            Simpan Pengaturan
+          <button id="btn-save-config" class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm rounded-lg shadow-xs transition inline-flex items-center space-x-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24">
+              <path d="M0 0h24v24H0z" fill="none" />
+              <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                <path stroke-opacity=".4" d="M9 7h6" />
+                <path d="M12 21H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4h8c1.28 0 2.36.36 3 1l2 2c.64.64 1 1.72 1 3v8a4 4 0 0 1-4 4zm-5 0v-3a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v3" />
+              </g>
+            </svg>
+            <span>Simpan Pengaturan</span>
           </button>
         </div>
       </section>
@@ -160,11 +170,27 @@
               </svg>
               <span>Pindai Printer</span>
             </button>
-            <button id="btn-save-printers" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm rounded-lg shadow-2xs transition">
-              Simpan Pilihan Printer
+            <button id="btn-save-printers" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm rounded-lg shadow-2xs transition inline-flex items-center space-x-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24">
+                <path d="M0 0h24v24H0z" fill="none" />
+                <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                  <path stroke-opacity=".4" d="M9 7h6" />
+                  <path d="M12 21H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4h8c1.28 0 2.36.36 3 1l2 2c.64.64 1 1.72 1 3v8a4 4 0 0 1-4 4zm-5 0v-3a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v3" />
+                </g>
+              </svg>
+              <span>Simpan Pilihan Printer</span>
             </button>
-            <button id="btn-sync-server" class="px-4 py-2 bg-white border border-amber-300 hover:bg-amber-50 text-amber-700 font-medium text-sm rounded-lg shadow-2xs transition">
-              ☁ Sinkron ke Server
+            <button id="btn-sync-server" class="px-4 py-2 bg-white border border-amber-300 hover:bg-amber-50 text-amber-700 font-medium text-sm rounded-lg shadow-2xs transition inline-flex items-center space-x-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1.15em" height="1.15em" viewBox="0 0 24 24">
+                <path d="M0 0h24v24H0z" fill="none" />
+                <g fill="none">
+                  <path fill="currentColor" d="m1.34 14.51l2.83 3.52l14.4.51l3.33-2.27v-4.55l-3.32-2.5l-1.74 1.28l-.94-3.72l-4.08-1.84l-3.22.93l-1.67 3.34l-3.87 1.3z" opacity=".2" />
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5.82 18.3c-1.17 0-2.3-.52-3.08-1.36a4.7 4.7 0 0 1-1.23-3.19A4.44 4.44 0 0 1 5.8 9.2c1.41 0 2.66.72 3.45 1.82m9.58 7.28H5.64" />
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.33 9.2A5.2 5.2 0 0 1 15.87 8c.85 1.47.82 2.97.62 3.97" />
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.63 10.09a3.6 3.6 0 0 1 3.45.11a4.37 4.37 0 0 1 1.6 5.97c-.71 1.24-1.68 2-2.69 2.12" />
+                </g>
+              </svg>
+              <span>Sinkron ke Server</span>
             </button>
           </div>
         </div>
@@ -186,7 +212,74 @@
         </div>
       </section>
 
-      <!-- TAB 3: LOGS -->
+      <!-- TAB 3: EXPORT & IMPORT (BACKUP & RESTORE) -->
+      <section id="tab-content-backup" class="hidden space-y-6">
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-xs space-y-4">
+          <div class="border-b border-slate-100 pb-3">
+            <h2 class="text-base font-semibold text-slate-900">Backup & Restore Konfigurasi</h2>
+            <p class="text-xs text-slate-500">Ekspor dan impor semua pengaturan sistem beserta daftar perangkat printer ke dalam 1 file JSON.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            <!-- Box Export -->
+            <div class="p-5 border border-slate-200 rounded-xl bg-slate-50 flex flex-col justify-between space-y-4">
+              <div>
+                <div class="flex items-center space-x-2 text-amber-600 mb-2 font-semibold text-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" viewBox="0 0 24 24">
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <path fill="currentColor" d="M3.088 5.373q.268-.22.578-.373l.006-.003l7-3.456a3 3 0 0 1 1.312-.31h.032c.456.002.904.108 1.312.31l7 3.456A3 3 0 0 1 22 7.687V12a1 1 0 0 1-2 0V8.008a2 2 0 0 1-.35.219l-5.392 2.662ZM12 12.004l1 .494V20a2.244 2.244 0 0 1-3.232 2.013l-6.096-3.01A3 3 0 0 1 2 16.313V7.687q0-.299.057-.593Zm5.293 8.289L18.586 19H15a1 1 0 0 1 0-2h3.586l-1.293-1.293a1 1 0 0 1 1.414-1.414l3 3a1 1 0 0 1 0 1.414l-3 3a.999.999 0 1 1-1.414-1.414" />
+                  </svg>
+                  <h3>Export Konfigurasi & Printer</h3>
+                </div>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Simpan seluruh konfigurasi aktif dan daftar printer ke dalam satu file backup (<code>.json</code>).
+                </p>
+              </div>
+              <div>
+                <button id="btn-export-config" class="w-full sm:w-auto px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm rounded-lg shadow-xs transition flex items-center justify-center space-x-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24">
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                      <path stroke-opacity=".4" d="M9 7h6" />
+                      <path d="M12 21H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4h8c1.28 0 2.36.36 3 1l2 2c.64.64 1 1.72 1 3v8a4 4 0 0 1-4 4zm-5 0v-3a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v3" />
+                    </g>
+                  </svg>
+                  <span>Simpan File Backup (.json)...</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Box Import -->
+            <div class="p-5 border border-slate-200 rounded-xl bg-slate-50 flex flex-col justify-between space-y-4">
+              <div>
+                <div class="flex items-center space-x-2 text-emerald-600 mb-2 font-semibold text-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" viewBox="0 0 24 24">
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <path fill="currentColor" d="M3.004 5.331q.052-.03.106-.056l.004-.002l8-3.951a2 2 0 0 1 .872-.207h.028c.303.003.6.073.872.207l4.055 2.003l.002.001l3.603 1.779l.002.001l.338.167A2 2 0 0 1 22 7.066V12a1 1 0 0 1-2 0V8.054l-5.742 2.835ZM12 12.004l1 .494V21a1.62 1.62 0 0 1-2.337 1.455l-7.549-3.728A2 2 0 0 1 2 16.934V7.066ZM21 17a1 1 0 0 1 0 2h-3.586l1.293 1.293a.999.999 0 1 1-1.414 1.414l-3-3a1 1 0 0 1 0-1.414l3-3a.999.999 0 1 1 1.414 1.414L17.414 17Z" />
+                  </svg>
+                  <h3>Import Konfigurasi & Printer</h3>
+                </div>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Pilih file backup (<code>.json</code>) dari komputer Anda untuk memulihkan seluruh pengaturan dan daftar printer ke dalam aplikasi ini secara instan.
+                </p>
+              </div>
+              <div class="flex items-center space-x-3">
+                <input id="input-import-file" type="file" accept=".json,application/json" class="hidden" />
+                <button id="btn-import-trigger" class="w-full sm:w-auto px-5 py-2.5 bg-white border border-slate-300 hover:bg-slate-100 text-slate-800 font-medium text-sm rounded-lg shadow-2xs transition flex items-center justify-center space-x-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24">
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <path fill="currentColor" d="M3.004 5.331q.052-.03.106-.056l.004-.002l8-3.951a2 2 0 0 1 .872-.207h.028c.303.003.6.073.872.207l4.055 2.003l.002.001l3.603 1.779l.002.001l.338.167A2 2 0 0 1 22 7.066V12a1 1 0 0 1-2 0V8.054l-5.742 2.835ZM12 12.004l1 .494V21a1.62 1.62 0 0 1-2.337 1.455l-7.549-3.728A2 2 0 0 1 2 16.934V7.066ZM21 17a1 1 0 0 1 0 2h-3.586l1.293 1.293a.999.999 0 1 1-1.414 1.414l-3-3a1 1 0 0 1 0-1.414l3-3a.999.999 0 1 1 1.414 1.414L17.414 17Z" />
+                  </svg>
+                  <span>Pilih & Upload File Backup</span>
+                </button>
+                <span id="import-file-name" class="text-xs text-slate-500 truncate max-w-[200px]"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: LOGS -->
       <section id="tab-content-logs" class="hidden space-y-4">
         <div class="flex items-center justify-between">
           <div>
